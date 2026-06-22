@@ -15,6 +15,7 @@ Aplikasi ini dapat membantu pengguna menemukan rekomendasi film berdasarkan hubu
 6. [Django Management Commands (Pengolahan & Analisis Data)](#6-django-management-commands-pengolahan--analisis-data)
 7. [Spesifikasi Tata Letak Antarmuka (UI/UX)](#7-spesifikasi-tata-letak-antarmuka-uiux)
 8. [Panduan Penggunaan Fitur Browser](#8-panduan-penggunaan-fitur-browser)
+9. [Panduan Konfigurasi Indeks Vektor (Vector Index) di Neo4j](#9-panduan-konfigurasi-indeks-vektor-vector-index-di-neo4j)
 
 ---
 
@@ -231,3 +232,42 @@ Antarmuka aplikasi dirancang menggunakan prinsip modern dengan tata letak dua ko
 
 *   **Tombol Hitung PageRank GDS (Panel Kanan)**: Klik tombol ini untuk memerintahkan server melakukan perhitungan ulang struktur jaringan grafik di Neo4j. Anda akan melihat log tahapan proses berjalan dan tabel berisi daftar 5 entitas (film/sutradara) terpopuler akan diperbarui secara otomatis.
 *   **Tombol Pintas Percakapan (Suggestion Chips)**: Di bagian bawah obrolan, terdapat tombol praktis seperti `🏆 Tampilkan Top Film (PageRank)`. Klik tombol tersebut untuk menyuruh asisten obrolan menampilkan daftar peringkat film terpopuler berdasarkan kalkulasi PageRank terakhir tanpa perlu mengetik kueri secara manual.
+
+---
+
+## 9. Panduan Konfigurasi Indeks Vektor (Vector Index) di Neo4j
+
+Pencarian semantik di aplikasi ini bergantung pada **Vector Index** di Neo4j. Meskipun skrip pengolah data Python kami (`llm_graph_builder` dan `ingest_local_embedding`) sudah dikonfigurasi untuk membuat indeks secara otomatis, Anda juga dapat mengelola dan memverifikasinya secara manual melalui antarmuka **Neo4j Browser UI** (`http://localhost:7474`).
+
+### A. Membuat Indeks Vektor secara Manual
+Jika indeks belum terdaftar, buka Neo4j Browser UI, tempel kueri berikut pada kolom perintah, lalu tekan tombol Run:
+
+```cypher
+CREATE VECTOR INDEX movie_vector_index IF NOT EXISTS
+FOR (f:Film)
+ON (f.embedding_vector)
+OPTIONS {
+  indexConfig: {
+    `vector.dimensions`: 384,
+    `vector.similarity_function`: 'cosine'
+  }
+}
+```
+
+> [!NOTE]
+> *   **384 Dimensi**: Digunakan apabila Anda menggunakan model pencarian makna lokal offline (`all-MiniLM-L6-v2`) via Hugging Face.
+> *   **768 Dimensi**: Ubah parameter `vector.dimensions` menjadi `768` apabila Anda menggantinya ke model embedding online milik Gemini API (`gemini-embedding-2`).
+
+### B. Memeriksa Status Indeks
+Untuk memastikan indeks vektor sudah aktif dan siap melayani kueri pencarian, jalankan perintah berikut di Neo4j Browser:
+```cypher
+SHOW INDEXES
+```
+*   Pastikan indeks bernama `movie_vector_index` berstatus **ONLINE**.
+*   Pastikan kolom `populationPercent` bernilai **100.0** (artinya seluruh data film telah berhasil dipetakan).
+
+### C. Menghapus Indeks (Re-index)
+Jika Anda ingin mengganti model embedding (misalnya berpindah dari Hugging Face ke Gemini API atau sebaliknya) dan ingin menghitung ulang vektor dari nol, hapus indeks lama terlebih dahulu sebelum membuat yang baru:
+```cypher
+DROP INDEX movie_vector_index
+```

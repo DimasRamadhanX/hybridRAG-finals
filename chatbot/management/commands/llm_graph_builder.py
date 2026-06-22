@@ -123,6 +123,25 @@ class Command(BaseCommand):
 
         # --- TAHAP AUTO EMBEDDING SEMANTIK ---
         self.stdout.write(self.style.WARNING("🔮 Memperbarui indeks vektor untuk pencarian semantik..."))
+        
+        # Pastikan Vector Index 'movie_vector_index' ada di Neo4j
+        create_index_query = """
+        CREATE VECTOR INDEX movie_vector_index IF NOT EXISTS
+        FOR (f:Film)
+        ON (f.embedding_vector)
+        OPTIONS {
+          indexConfig: {
+            `vector.dimensions`: 384,
+            `vector.similarity_function`: 'cosine'
+          }
+        }
+        """
+        with driver.session() as session:
+            try:
+                session.run(create_index_query)
+            except Exception as index_err:
+                self.stdout.write(self.style.WARNING(f"⚠️ Peringatan saat memastikan index: {str(index_err)}"))
+
         try:
             genres_str = ", ".join(genres) if genres else "Unknown Genre"
             rich_text = f"Judul: {title}. Sutradara: {director_name}. Genre: {genres_str}. Sinopsis: {description}"

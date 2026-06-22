@@ -13,6 +13,26 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Memulai proses pembuatan embedding lokal (Hugging Face)..."))
         start_time = time.time()
 
+        # 0. PASTIKAN VECTOR INDEX ADA DI NEO4J
+        self.stdout.write("Memastikan Vector Index 'movie_vector_index' terdaftar di Neo4j...")
+        create_index_query = """
+        CREATE VECTOR INDEX movie_vector_index IF NOT EXISTS
+        FOR (f:Film)
+        ON (f.embedding_vector)
+        OPTIONS {
+          indexConfig: {
+            `vector.dimensions`: 384,
+            `vector.similarity_function`: 'cosine'
+          }
+        }
+        """
+        with driver.session() as session:
+            try:
+                session.run(create_index_query)
+                self.stdout.write(self.style.SUCCESS("✅ Vector Index 'movie_vector_index' (384 dimensi, cosine) berhasil diinisialisasi/dipastikan ada."))
+            except Exception as index_err:
+                self.stdout.write(self.style.WARNING(f"⚠️ Peringatan saat memastikan index: {str(index_err)}"))
+
         # 1. AMBIL DATA AWAL (Hanya mengambil film yang belum memiliki vektor)
         fetch_query = """
         MATCH (f:Film)
