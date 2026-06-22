@@ -1,0 +1,83 @@
+# ==========================================
+# 🚀 PROYEK SPECIFIC (RAG-PROJECT & NEO4J)
+# ==========================================
+# Mengunci folder Virtual Environment kamu
+rag-project/
+rag-project_v2/
+env/
+venv/
+ENV/
+
+# Mengunci file environment rahasia (API Key Gemini & Password DB)
+.env
+*.env
+
+# Mengunci folder data biner Neo4j dari Docker agar Git tidak bengkak
+neo4j/data/
+neo4j/logs/
+neo4j/import/
+neo4j/plugins/
+data/neo4j/
+logs/neo4j/
+
+# Mengunci file CSV hasil download/scraping berskala besar
+*.csv
+!sample_movie.txt
+!film_horror_fiktif.txt
+
+# ==========================================
+# 🐍 PYTHON SPECIFIC
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/wheels/
+*.egg-info/
+.installed.ini
+*.egg
+MANIFEST
+
+# ==========================================
+# 🎸 DJANGO SPECIFIC
+# ==========================================
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+media/
+media_root/
+
+# ==========================================
+# 🧠 DOWNLOAD MODEL LOKAL (HUGGING FACE)
+# ==========================================
+.cache/
+.huggingface/
+huggingface_models/
+models/
+
+# ==========================================
+# 💻 IDE & OS SPECIFIC
+# ==========================================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+desktop.ini

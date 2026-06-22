@@ -1,0 +1,32 @@
+{% load static %}
+
+<div class="chat-message user">
+    <div class="bubble">
+        {{ user_message }}
+    </div>
+</div>
+
+<div class="chat-message bot">
+    <div class="bubble">
+
+        {% if reasoning_steps %}
+        <details class="reasoning-box">
+            <summary>
+                <span>🔮 Lihat Jejak Berpikir Agen (Reasoning Path)</span>
+                <span>▼</span>
+            </summary>
+            <div class="reasoning-content">
+                <ul class="reasoning-list">
+                    {% for step in reasoning_steps %}
+                    <li class="reasoning-step">{{ step }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </details>
+        {% endif %}
+
+        <p class="bot-title">🎬 Movie Assistant</p>
+        <div class="bot-text">{{ bot_answer }}</div>
+
+    </div>
+</div>
