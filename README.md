@@ -182,7 +182,7 @@ Aplikasi ini menyediakan tiga perintah Django (*Management Commands*) di dalam f
     | `--truncate` | Flag opsional untuk menghapus seluruh node dan relasi di Neo4j sebelum proses impor | `False` (Tidak aktif) |
 
 *   **Petunjuk Eksekusi**:
-    ![Hasil Eksekusi Fetch Wikidata]({hasil_fetch_wikidata.png})
+    ![Hasil Eksekusi Fetch Wikidata](hasil_fetch_wikidata.png)
 
 ### B. Perintah Ekstraktor Sinopsis (`llm_graph_builder`)
 *   **Kegunaan**: Mentransformasikan dokumen teks bebas atau sinopsis film tidak terstruktur (seperti berkas `.txt`) menjadi struktur grafik Neo4j secara otomatis. Perintah ini membaca teks, mengekstrak entitas (*Film*, *Director*, *Genre*) serta hubungannya menggunakan kecerdasan Gemini API, memasukkannya ke database, dan menghasilkan koordinat makna teks (*embedding vector*) menggunakan Hugging Face lokal agar film dapat langsung dicari melalui obrolan RAG.
@@ -196,16 +196,25 @@ Aplikasi ini menyediakan tiga perintah Django (*Management Commands*) di dalam f
     | `file_path` (Argumen 1) | Wajib | Jalur lengkap atau nama berkas `.txt` yang ingin dibaca dan diolah |
 
 *   **Petunjuk Eksekusi**:
-    ![Hasil Eksekusi LLM Graph Builder]({hasil_llm_graph_builder.png})
+    ![Hasil Eksekusi LLM Graph Builder](hasil_llm_graph_builder.png)
 
-### C. Perintah Analisis Grafik (`run_graph_analytics`)
+### C. Perintah Pembuat Vektor Semantik Lokal (`ingest_local_embedding`)
+*   **Kegunaan**: Mengambil data seluruh film dari Neo4j yang belum memiliki koordinat vektor (`embedding_vector`), menghitung nilai embeddings menggunakan model Hugging Face secara lokal/offline (bebas kuota API & internet), lalu menyimpannya kembali ke node film terkait di database grafik.
+*   **Cara Penggunaan**:
+    ```bash
+    python manage.py ingest_local_embedding
+    ```
+*   **Petunjuk Eksekusi**:
+    ![Hasil Eksekusi Ingest Local Embedding](hasil_embedding_local.png)
+
+### D. Perintah Analisis Grafik (`run_graph_analytics`)
 *   **Kegunaan**: Menjalankan analisis statistik ketokohan dan kepopuleran film (PageRank) secara manual melalui terminal menggunakan plugin Neo4j Graph Data Science (GDS). Perintah ini akan menghapus proyeksi memori graf yang lama, membuat proyeksi hubungan baru, menjalankan kalkulasi PageRank, dan menampilkan 5 besar film paling berpengaruh di terminal.
 *   **Cara Penggunaan**:
     ```bash
     python manage.py run_graph_analytics
     ```
 *   **Petunjuk Eksekusi**:
-    ![Hasil Eksekusi Run Graph Analytics]({hasil_run_graph_analytics.png})
+    ![Hasil Eksekusi Run Graph Analytics](hasil_pagerank.png)
 
 ---
 
@@ -213,7 +222,7 @@ Aplikasi ini menyediakan tiga perintah Django (*Management Commands*) di dalam f
 
 Antarmuka aplikasi dirancang menggunakan prinsip modern dengan tata letak dua kolom pada layar komputer, yang akan otomatis bertumpuk secara rapi di layar handphone.
 
-![Tampilan Antarmuka Aplikasi](C:\movie-rag-project\app_ui.png)
+![Tampilan Antarmuka Aplikasi](app_ui.png)
 *(Rancangan antarmuka obrolan dua kolom untuk memisahkan panel obrolan asisten di sebelah kiri dan dashboard analisis statistik grafik di sebelah kanan)*
 
 ---
